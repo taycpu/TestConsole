@@ -155,8 +155,9 @@ namespace DebugPanel.Editor
 
             var clearBtn = CreateButton(conToolbar.transform, "ClearButton", "Clear", 14, new Color(0.3f, 0.3f, 0.3f));
             clearBtn.GetComponent<RectTransform>().sizeDelta = new Vector2(70, 0);
-            clearBtn.GetComponent<LayoutElement>()?.SetLayoutInputForAxis(70, 70, -1, 0);
-            clearBtn.AddComponent<LayoutElement>().preferredWidth = 70;
+            var clearBtnLE = clearBtn.AddComponent<LayoutElement>();
+            clearBtnLE.preferredWidth = 70;
+            clearBtnLE.minWidth = 70;
 
             var logToggle = CreateToggleButton(conToolbar.transform, "LogToggle", "Log", Color.white);
             var warnToggle = CreateToggleButton(conToolbar.transform, "WarnToggle", "Warn", new Color(1f, 0.85f, 0f));
