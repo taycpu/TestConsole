@@ -12,17 +12,25 @@ namespace DebugPanel.Editor
 {
     public static class DebugPanelPrefabBuilder
     {
+        private const string ResourcesDir = "Assets/DebugPanel/Resources";
+
         [MenuItem("Tools/Debug Panel/Build Prefab")]
         public static void BuildPrefab()
         {
-            var root = BuildHierarchy();
+            if (!System.IO.Directory.Exists(ResourcesDir))
+                System.IO.Directory.CreateDirectory(ResourcesDir);
 
-            // Save as prefab in Resources so it's auto-loaded
-            const string dir = "Assets/DebugPanel/Resources";
-            if (!System.IO.Directory.Exists(dir))
-                System.IO.Directory.CreateDirectory(dir);
+            // ── Save sub-prefabs as separate assets first ─────────────────
+            var catHeaderPrefab   = SaveSubPrefab(BuildCategoryHeader(),  "DebugPanel_CategoryHeader");
+            var optRowPrefab      = SaveSubPrefab(BuildOptionRow(),        "DebugPanel_OptionRow");
+            var conEntryPrefab    = SaveSubPrefab(BuildConsoleEntry(),     "DebugPanel_ConsoleEntry");
+            var sysRowPrefab      = SaveSubPrefab(BuildSystemInfoRow(),    "DebugPanel_SystemInfoRow");
+            var sysSectionPrefab  = SaveSubPrefab(BuildSectionHeader(),   "DebugPanel_SectionHeader");
 
-            string path = $"{dir}/DebugPanel.prefab";
+            // ── Build and save main prefab ────────────────────────────────
+            var root = BuildHierarchy(catHeaderPrefab, optRowPrefab, conEntryPrefab, sysRowPrefab, sysSectionPrefab);
+
+            string path = $"{ResourcesDir}/DebugPanel.prefab";
             bool success;
             PrefabUtility.SaveAsPrefabAsset(root, path, out success);
             Object.DestroyImmediate(root);
@@ -33,9 +41,28 @@ namespace DebugPanel.Editor
                 Debug.Log($"[DebugPanel] Prefab saved to {path}");
                 EditorUtility.DisplayDialog("Debug Panel", $"Prefab built successfully!\n{path}", "OK");
             }
+            else
+            {
+                Debug.LogError("[DebugPanel] Failed to save prefab.");
+            }
         }
 
-        private static GameObject BuildHierarchy()
+        private static GameObject SaveSubPrefab(GameObject go, string assetName)
+        {
+            string path = $"{ResourcesDir}/{assetName}.prefab";
+            bool success;
+            var saved = PrefabUtility.SaveAsPrefabAsset(go, path, out success);
+            Object.DestroyImmediate(go);
+            if (!success) Debug.LogError($"[DebugPanel] Failed to save sub-prefab {assetName}");
+            return saved;
+        }
+
+        private static GameObject BuildHierarchy(
+            GameObject catHeaderPrefab,
+            GameObject optRowPrefab,
+            GameObject conEntryPrefab,
+            GameObject sysRowPrefab,
+            GameObject sysSectionPrefab)
         {
             // ── Root ──────────────────────────────────────────────────────
             var root = new GameObject("DebugPanel");
@@ -125,9 +152,6 @@ namespace DebugPanel.Editor
             var optTabPanel = BuildScrollableTabPanel(contentArea.transform, "OptionsTabPanel", out var optContent);
             var optTabComp = optTabPanel.AddComponent<OptionsTab>();
 
-            var catHeaderPrefab = BuildCategoryHeader();
-            var optRowPrefab = BuildOptionRow();
-
             SetPrivate(optTabComp, "contentRoot", optContent.transform);
             SetPrivate(optTabComp, "categoryHeaderPrefab", catHeaderPrefab);
             SetPrivate(optTabComp, "optionRowPrefab", optRowPrefab);
@@ -135,8 +159,6 @@ namespace DebugPanel.Editor
             // ── Console Tab ───────────────────────────────────────────────
             var conTabPanel = BuildScrollableTabPanel(contentArea.transform, "ConsoleTabPanel", out var conContent);
             var conTabComp = conTabPanel.AddComponent<ConsoleTab>();
-
-            var conEntryPrefab = BuildConsoleEntry();
 
             // Console toolbar
             var conToolbar = CreateRect(conTabPanel.transform, "Toolbar");
@@ -173,8 +195,6 @@ namespace DebugPanel.Editor
             // ── System Info Tab ───────────────────────────────────────────
             var sysTabPanel = BuildScrollableTabPanel(contentArea.transform, "SystemInfoTabPanel", out var sysContent);
             var sysTabComp = sysTabPanel.AddComponent<SystemInfoTab>();
-            var sysRowPrefab = BuildSystemInfoRow();
-            var sysSectionPrefab = BuildSectionHeader();
 
             SetPrivate(sysTabComp, "contentRoot", sysContent.transform);
             SetPrivate(sysTabComp, "sectionHeaderPrefab", sysSectionPrefab);
@@ -274,19 +294,16 @@ namespace DebugPanel.Editor
             labelGo.AddComponent<LayoutElement>().flexibleWidth = 1;
 
             // Toggle
-            var toggleGo = new GameObject("ToggleControl");
-            toggleGo.transform.SetParent(go.transform, false);
+            var toggleGo = CreateRect(go.transform, "ToggleControl");
             var toggleLE = toggleGo.AddComponent<LayoutElement>();
             toggleLE.preferredWidth = 40;
             var toggle = toggleGo.AddComponent<Toggle>();
-            var toggleBg = new GameObject("Background");
-            toggleBg.transform.SetParent(toggleGo.transform, false);
+            var toggleBg = CreateRect(toggleGo.transform, "Background");
             var toggleBgImg = toggleBg.AddComponent<Image>();
             toggleBgImg.color = new Color(0.3f, 0.3f, 0.3f);
             var toggleBgRect = toggleBg.GetComponent<RectTransform>();
             toggleBgRect.sizeDelta = new Vector2(36, 20);
-            var checkmark = new GameObject("Checkmark");
-            checkmark.transform.SetParent(toggleBg.transform, false);
+            var checkmark = CreateRect(toggleBg.transform, "Checkmark");
             var checkmarkImg = checkmark.AddComponent<Image>();
             checkmarkImg.color = new Color(0.2f, 0.6f, 1f);
             var checkRect = checkmark.GetComponent<RectTransform>();
@@ -296,28 +313,22 @@ namespace DebugPanel.Editor
             toggle.graphic = checkmarkImg;
 
             // Slider + value label
-            var sliderGo = new GameObject("SliderControl");
-            sliderGo.transform.SetParent(go.transform, false);
+            var sliderGo = CreateRect(go.transform, "SliderControl");
             var sliderLE = sliderGo.AddComponent<LayoutElement>();
             sliderLE.flexibleWidth = 1.5f;
             sliderLE.preferredHeight = 30;
             var slider = sliderGo.AddComponent<Slider>();
-            var sliderBg = new GameObject("Background");
-            sliderBg.transform.SetParent(sliderGo.transform, false);
+            var sliderBg = CreateRect(sliderGo.transform, "Background");
             sliderBg.AddComponent<Image>().color = new Color(0.25f, 0.25f, 0.25f);
             StretchFull(sliderBg.GetComponent<RectTransform>());
-            var fillArea = new GameObject("FillArea");
-            fillArea.transform.SetParent(sliderGo.transform, false);
+            var fillArea = CreateRect(sliderGo.transform, "FillArea");
             StretchFull(fillArea.GetComponent<RectTransform>());
-            var fill = new GameObject("Fill");
-            fill.transform.SetParent(fillArea.transform, false);
+            var fill = CreateRect(fillArea.transform, "Fill");
             fill.AddComponent<Image>().color = new Color(0.2f, 0.6f, 1f);
             StretchFull(fill.GetComponent<RectTransform>());
-            var handleArea = new GameObject("HandleArea");
-            handleArea.transform.SetParent(sliderGo.transform, false);
+            var handleArea = CreateRect(sliderGo.transform, "HandleArea");
             StretchFull(handleArea.GetComponent<RectTransform>());
-            var handle = new GameObject("Handle");
-            handle.transform.SetParent(handleArea.transform, false);
+            var handle = CreateRect(handleArea.transform, "Handle");
             handle.AddComponent<Image>().color = Color.white;
             handle.GetComponent<RectTransform>().sizeDelta = new Vector2(16, 16);
             slider.fillRect = fill.GetComponent<RectTransform>();
@@ -333,14 +344,12 @@ namespace DebugPanel.Editor
             sliderValRect.sizeDelta = new Vector2(50, 0);
 
             // Input field
-            var inputGo = new GameObject("InputFieldControl");
-            inputGo.transform.SetParent(go.transform, false);
+            var inputGo = CreateRect(go.transform, "InputFieldControl");
             inputGo.AddComponent<LayoutElement>().preferredWidth = 120;
             var inputImg = inputGo.AddComponent<Image>();
             inputImg.color = new Color(0.2f, 0.2f, 0.2f);
             var inputField = inputGo.AddComponent<TMP_InputField>();
-            var inputTextArea = new GameObject("Text Area");
-            inputTextArea.transform.SetParent(inputGo.transform, false);
+            var inputTextArea = CreateRect(inputGo.transform, "Text Area");
             StretchFull(inputTextArea.GetComponent<RectTransform>(), new Vector2(4, 4), new Vector2(-4, -4));
             inputTextArea.AddComponent<RectMask2D>();
             var inputText = CreateTMPText(inputTextArea.transform, "Text", "", 14);
@@ -349,8 +358,7 @@ namespace DebugPanel.Editor
             inputField.textViewport = inputTextArea.GetComponent<RectTransform>();
 
             // Dropdown
-            var dropdownGo = new GameObject("DropdownControl");
-            dropdownGo.transform.SetParent(go.transform, false);
+            var dropdownGo = CreateRect(go.transform, "DropdownControl");
             dropdownGo.AddComponent<LayoutElement>().preferredWidth = 140;
             var dropdownImg = dropdownGo.AddComponent<Image>();
             dropdownImg.color = new Color(0.2f, 0.2f, 0.2f);
@@ -501,9 +509,8 @@ namespace DebugPanel.Editor
 
         private static GameObject CreateRect(Transform parent, string name)
         {
-            var go = new GameObject(name);
+            var go = new GameObject(name, typeof(RectTransform));
             go.transform.SetParent(parent, false);
-            go.AddComponent<RectTransform>();
             return go;
         }
 
@@ -525,11 +532,34 @@ namespace DebugPanel.Editor
             rect.offsetMax = offsetMax ?? Vector2.zero;
         }
 
-        private static void SetPrivate(object obj, string fieldName, object value)
+        private static void SetPrivate(UnityEngine.Object obj, string fieldName, object value)
         {
-            var field = obj.GetType().GetField(fieldName,
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            field?.SetValue(obj, value);
+            var so = new SerializedObject(obj);
+            var prop = so.FindProperty(fieldName);
+            if (prop == null)
+            {
+                Debug.LogWarning($"[DebugPanelBuilder] Field '{fieldName}' not found on {obj.GetType().Name}");
+                return;
+            }
+
+            if (value is UnityEngine.Object uObj)
+                prop.objectReferenceValue = uObj;
+            else if (value is bool b)
+                prop.boolValue = b;
+            else if (value is int i)
+                prop.intValue = i;
+            else if (value is float f)
+                prop.floatValue = f;
+            else if (value is string s)
+                prop.stringValue = s;
+            else if (value is Color c)
+                prop.colorValue = c;
+            else if (value is Vector2 v2)
+                prop.vector2Value = v2;
+            else if (value is Vector3 v3)
+                prop.vector3Value = v3;
+
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
     }
 }

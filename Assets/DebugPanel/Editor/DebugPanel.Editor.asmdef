@@ -2,7 +2,8 @@
     "name": "DebugPanel.Editor",
     "rootNamespace": "DebugPanel.Editor",
     "references": [
-        "DebugPanel"
+        "DebugPanel",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [
         "Editor"

@@ -69,8 +69,8 @@ namespace DebugPanel
             _instance = this;
             DontDestroyOnLoad(gameObject);
 
-            _optionsTab = GetComponentInChildren<OptionsTab.OptionsTab>(true);
-            _systemInfoTab = GetComponentInChildren<SystemInfoTab.SystemInfoTab>(true);
+            _optionsTab = GetComponentInChildren<OptionsTab>(true);
+            _systemInfoTab = GetComponentInChildren<SystemInfoTab>(true);
         }
 
         // ── Panel visibility ───────────────────────────────────────────────
