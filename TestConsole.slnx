@@ -1,2 +1,4 @@
 ﻿<Solution>
+  <Project Path="DebugPanel.csproj" />
+  <Project Path="DebugPanel.Editor.csproj" />
 </Solution>
