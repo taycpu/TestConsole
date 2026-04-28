@@ -21,7 +21,8 @@ namespace DebugPanel
         private void Awake()
         {
             // Ensure the trigger itself is not destroyed
-            DontDestroyOnLoad(gameObject);
+            if (transform.parent == null)
+                DontDestroyOnLoad(gameObject);
         }
 
         public void OnPointerClick(PointerEventData eventData)
