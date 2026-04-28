@@ -1,13 +1,25 @@
+using DebugPanel;
+using DebugPanel.Options;
 using UnityEngine;
 
-namespace DebugPanel.Options
+namespace Prototype
 {
-    public partial class DebugOptions
+    public sealed class PrototypeDebugOptions
     {
+        private static PrototypeDebugOptions _current;
+
         private float _prototypePlayerSpeed = 5f;
         private float _prototypeSpawnInterval = 1.25f;
         private float _prototypeHazardSpeed = 2.8f;
         private bool _prototypeInvulnerable;
+
+        public static PrototypeDebugOptions Current => _current ??= new PrototypeDebugOptions();
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void Register()
+        {
+            DebugPanelManager.Instance.AddOptionContainer(Current);
+        }
 
         [Category("Prototype")]
         [DisplayName("Player Speed")]
@@ -16,11 +28,7 @@ namespace DebugPanel.Options
         public float PrototypePlayerSpeed
         {
             get => _prototypePlayerSpeed;
-            set
-            {
-                _prototypePlayerSpeed = value;
-                OnPropertyChanged(nameof(PrototypePlayerSpeed));
-            }
+            set => _prototypePlayerSpeed = value;
         }
 
         [Category("Prototype")]
@@ -30,11 +38,7 @@ namespace DebugPanel.Options
         public float PrototypeSpawnInterval
         {
             get => _prototypeSpawnInterval;
-            set
-            {
-                _prototypeSpawnInterval = value;
-                OnPropertyChanged(nameof(PrototypeSpawnInterval));
-            }
+            set => _prototypeSpawnInterval = value;
         }
 
         [Category("Prototype")]
@@ -44,11 +48,7 @@ namespace DebugPanel.Options
         public float PrototypeHazardSpeed
         {
             get => _prototypeHazardSpeed;
-            set
-            {
-                _prototypeHazardSpeed = value;
-                OnPropertyChanged(nameof(PrototypeHazardSpeed));
-            }
+            set => _prototypeHazardSpeed = value;
         }
 
         [Category("Prototype")]
@@ -57,11 +57,7 @@ namespace DebugPanel.Options
         public bool PrototypeInvulnerable
         {
             get => _prototypeInvulnerable;
-            set
-            {
-                _prototypeInvulnerable = value;
-                OnPropertyChanged(nameof(PrototypeInvulnerable));
-            }
+            set => _prototypeInvulnerable = value;
         }
 
         [Category("Prototype")]

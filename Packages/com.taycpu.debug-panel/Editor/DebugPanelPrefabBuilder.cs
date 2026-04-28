@@ -1,5 +1,4 @@
 // This file must live in an Editor folder to access UnityEditor APIs.
-// Move it to Assets/DebugPanel/Editor/ if needed.
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
@@ -12,7 +11,7 @@ namespace DebugPanel.Editor
 {
     public static class DebugPanelPrefabBuilder
     {
-        private const string ResourcesDir = "Assets/DebugPanel/Resources";
+        private const string ResourcesDir = "Packages/com.taycpu.debug-panel/Runtime/Resources";
 
         [MenuItem("Tools/Debug Panel/Build Prefab")]
         public static void BuildPrefab()

@@ -10,6 +10,15 @@
       },
       "hash": "b92c05a25820cfc9f59ce4094eb46aaec8632ea2"
     },
+    "com.taycpu.debug-panel": {
+      "version": "file:com.taycpu.debug-panel",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.ugui": "2.0.0",
+        "com.unity.textmeshpro": "3.0.6"
+      }
+    },
     "com.unity.2d.animation": {
       "version": "13.0.2",
       "depth": 0,
@@ -268,6 +277,14 @@
         "com.unity.modules.jsonserialize": "1.0.0"
       },
       "url": "https://packages.unity.com"
+    },
+    "com.unity.textmeshpro": {
+      "version": "5.0.0",
+      "depth": 1,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.ugui": "2.0.0"
+      }
     },
     "com.unity.timeline": {
       "version": "1.8.9",

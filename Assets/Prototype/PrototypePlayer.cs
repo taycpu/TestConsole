@@ -1,4 +1,3 @@
-using DebugPanel.Options;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -23,7 +22,7 @@ namespace Prototype
             if (input.sqrMagnitude > 1f)
                 input.Normalize();
 
-            _body.linearVelocity = input * DebugOptions.Current.PrototypePlayerSpeed;
+            _body.linearVelocity = input * PrototypeDebugOptions.Current.PrototypePlayerSpeed;
             ClampToArena();
         }
 

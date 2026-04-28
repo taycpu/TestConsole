@@ -21,6 +21,8 @@ namespace DebugPanel
             }
         }
 
+        public static bool HasInstance => _instance != null;
+
         [SerializeField] private DebugPanelCanvas panelCanvas;
 
         public bool IsVisible => panelCanvas != null && panelCanvas.IsVisible;

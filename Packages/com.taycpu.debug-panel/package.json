@@ -1,0 +1,30 @@
+{
+  "name": "com.taycpu.debug-panel",
+  "displayName": "Debug Panel",
+  "version": "0.1.0",
+  "unity": "6000.0",
+  "description": "A lightweight in-game debug panel for Unity with runtime options, console logs, and system information.",
+  "keywords": [
+    "debug",
+    "developer-tools",
+    "runtime-console",
+    "options",
+    "unity"
+  ],
+  "category": "Tools",
+  "dependencies": {
+    "com.unity.ugui": "2.0.0",
+    "com.unity.textmeshpro": "3.0.6"
+  },
+  "samples": [
+    {
+      "displayName": "Example Options",
+      "description": "A MonoBehaviour that registers gameplay, diagnostic, and action options with the debug panel.",
+      "path": "Samples~/ExampleOptions"
+    }
+  ],
+  "author": {
+    "name": "taycpu",
+    "url": "https://github.com/taycpu"
+  }
+}

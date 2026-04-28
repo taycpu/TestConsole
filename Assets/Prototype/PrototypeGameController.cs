@@ -1,4 +1,3 @@
-using DebugPanel.Options;
 using TMPro;
 using UnityEngine;
 
@@ -81,12 +80,12 @@ namespace Prototype
             Debug.Log($"[Prototype] Collected dot #{_score}.");
             Destroy(_collectible.gameObject);
             _collectible = null;
-            _nextSpawnTime = Time.time + DebugOptions.Current.PrototypeSpawnInterval;
+            _nextSpawnTime = Time.time + PrototypeDebugOptions.Current.PrototypeSpawnInterval;
         }
 
         public void HitHazard()
         {
-            if (DebugOptions.Current.PrototypeInvulnerable)
+            if (PrototypeDebugOptions.Current.PrototypeInvulnerable)
             {
                 Debug.Log("[Prototype] Hazard ignored because invulnerability is enabled.");
                 return;

@@ -1,4 +1,3 @@
-using DebugPanel.Options;
 using UnityEngine;
 
 namespace Prototype
@@ -33,7 +32,7 @@ namespace Prototype
                 _direction.y *= -1f;
 
             _direction = _direction.sqrMagnitude < 0.001f ? Vector2.right : _direction.normalized;
-            _body.linearVelocity = _direction * DebugOptions.Current.PrototypeHazardSpeed;
+            _body.linearVelocity = _direction * PrototypeDebugOptions.Current.PrototypeHazardSpeed;
         }
 
         private void OnTriggerEnter2D(Collider2D other)

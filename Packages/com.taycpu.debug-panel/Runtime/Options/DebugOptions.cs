@@ -3,8 +3,8 @@ using System.ComponentModel;
 namespace DebugPanel.Options
 {
     /// <summary>
-    /// Partial class root for developer-defined debug options.
-    /// Extend this in other files: DebugOptions.Gameplay.cs, DebugOptions.Debug.cs, etc.
+    /// Default options container registered by the package bootstrapper.
+    /// Package consumers usually register their own objects with DebugPanelManager.Instance.AddOptionContainer.
     ///
     /// Access the singleton via DebugOptions.Current.
     /// </summary>
